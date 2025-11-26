@@ -21,7 +21,11 @@ FetchContent_Declare(
     slang
     URL ${SLANG_RELEASE_URL}
 )
+
 FetchContent_MakeAvailable(slang)
+
+list(APPEND CMAKE_PREFIX_PATH ${slang_SOURCE_DIR}/cmake)
+find_package(slang REQUIRED)
 
 # Create imported target for slang
 set(SLANG_INCLUDE_DIR "${slang_SOURCE_DIR}/include")
@@ -31,13 +35,13 @@ if(WIN32)
         "${slang_SOURCE_DIR}/lib/slang-rt.lib"
         "${slang_SOURCE_DIR}/lib/slang.lib"
     )
-    set(SLANG_RUNTIME_LIBS
-        "${slang_SOURCE_DIR}/bin/gfx.dll"
+    set(SLANG_SHARED_LIBS 
+        # "${slang_SOURCE_DIR}/bin/gfx.dll"
         "${slang_SOURCE_DIR}/bin/slang-glsl-module.dll"
         "${slang_SOURCE_DIR}/bin/slang-glslang.dll"
         "${slang_SOURCE_DIR}/bin/slang-llvm.dll"
-        "${slang_SOURCE_DIR}/bin/slang-rt.dll"
-        "${slang_SOURCE_DIR}/bin/slang.dll"
+        # "${slang_SOURCE_DIR}/bin/slang-rt.dll"
+        # "${slang_SOURCE_DIR}/bin/slang.dll"
     )
 elseif(LINUX)
     set(DXC_STATIC_LIB "")
@@ -65,17 +69,20 @@ if(NOT TARGET slang::slang)
         set_target_properties(slang::slang PROPERTIES
             INTERFACE_LINK_LIBRARIES "${SLANG_RUNTIME_LIBS}"
         )
+        
     endif()
 endif()
 
 function(build_with_slang target)
-    target_link_libraries(${target} PUBLIC slang::slang)
-
-    if(LINUX)
-        set_target_properties(${target} PROPERTIES
-            INSTALL_RPATH "${slang_SOURCE_DIR}/lib"
-            BUILD_WITH_INSTALL_RPATH TRUE
+    if (VEX_ENABLE_SLANG)
+        target_link_libraries(Vex PRIVATE slang::slang slang::gfx)
+        message(STATUS "Installing Slang headers: ${slang_SOURCE_DIR}/${SLANG_HEADERS_INCLUDE_NAME}")
+        add_header_only_dependency(${target} slang "${slang_SOURCE_DIR}" "${SLANG_HEADERS_INCLUDE_NAME}" "slang")
+        target_sources(Vex PRIVATE
+            "src/Vex/Shaders/SlangImpl.h"
+            "src/Vex/Shaders/SlangImpl.cpp"
         )
+        
     endif()
 
     message(STATUS "Statically linked with Slang: ${SLANG_STATIC_LIBS}")
@@ -106,4 +113,5 @@ function(link_with_slang target)
             "${VEX_ROOT_DIR}/shaders/Vex.slang"
             "$<TARGET_FILE_DIR:${target}>/Vex.slang"
     )
+
 endfunction()

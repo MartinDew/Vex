@@ -14,7 +14,12 @@ function(setup_pix_3 TARGET)
         )
     endif()
 
-    set(PIX_INCLUDE_DIR "${PIX_EVENTS_DIR}/include")
+    # The WinPixEventRuntime nupkg extracts headers to "Include" (capital I),
+    # not "include". NTFS is case-insensitive so this is invisible building
+    # natively on Windows, but breaks INTERFACE_INCLUDE_DIRECTORIES below on
+    # any case-sensitive build host (e.g. cross-compiling to Windows via
+    # mingw from Linux).
+    set(PIX_INCLUDE_DIR "${PIX_EVENTS_DIR}/Include")
     set(PIX_STATIC_LIB "${PIX_EVENTS_DIR}/bin/x64/WinPixEventRuntime.lib")
     set(PIX_RUNTIME_DLL "${PIX_EVENTS_DIR}/bin/x64/WinPixEventRuntime.dll")
 

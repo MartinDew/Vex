@@ -1,5 +1,6 @@
 #include "RHIResourceLayout.h"
 
+#include <cstring>
 #include <utility>
 
 #include <Vex/Bindings.h>

@@ -1,6 +1,7 @@
 #include "DXCImpl.h"
 
 #include <algorithm>
+#include <cstring>
 
 #include <Vex/Logger.h>
 #include <Vex/PhysicalDevice.h>

@@ -11,14 +11,6 @@
 #include <wrl/client.h>
 
 #if defined(__MINGW32__)
-// dxcapi.h declares these interfaces via plain __declspec(uuid(...)), which
-// MSVC turns into a working __uuidof() but mingw's GCC doesn't wire up from
-// that alone: mingw's __uuidof(T) is itself just a macro (see mingw-w64's
-// _mingw.h) expanding to __mingw_uuidof<T>(), and only __CRT_UUID_DECL(...)
-// actually *defines* that template specialization -- leaving it
-// declared-but-undefined at link time otherwise. GUIDs copied from
-// dxcapi.h's own CROSS_PLATFORM_UUIDOF(...) invocations for every DXC
-// interface this file uses via IID_PPV_ARGS.
 struct IDxcBlob;
 struct IDxcBlobEncoding;
 struct IDxcBlobUtf8;

@@ -435,7 +435,6 @@ void VkRHI::Init()
         ::vk::PhysicalDeviceMeshShaderFeaturesEXT{
             .taskShader = true,
             .meshShader = true,
-            .meshShaderQueries = true,
         },
         ::vk::PhysicalDeviceAccelerationStructureFeaturesKHR{
             .accelerationStructure = true,
